@@ -1,22 +1,16 @@
 from __future__ import division, print_function
 from keras.applications.resnet import ResNet50
 # coding=utf-8
-import sys
 import os
-import glob
-import re
 import numpy as np
 from keras.utils import load_img, img_to_array
 
 # Keras
 from keras.applications.imagenet_utils import preprocess_input, decode_predictions
-from keras.models import load_model
-from keras.preprocessing import image
 
 # Flask utils
 from flask import Flask, redirect, url_for, request, render_template, jsonify
 from werkzeug.utils import secure_filename
-from gevent.pywsgi import WSGIServer
 
 # Define a flask app
 app = Flask(__name__)
