@@ -46,11 +46,11 @@ def index():
 def predict():
     image_b64 = request.form.get("file")
     image_bytes = base64.b64decode(image_b64)
-    with open("image.png", "wb") as f:
+    with open("./uploads/29.png", "wb") as f:
         f.write(image_bytes)
 
     # Make prediction
-    preds = model_predict("image.png", model)
+    preds = model_predict("./uploads/29.png", model)
 
     # Process your result for human
     # pred_class = preds.argmax(axis=-1)            # Simple argmax
