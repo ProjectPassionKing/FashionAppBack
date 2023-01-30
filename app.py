@@ -1,9 +1,13 @@
 from __future__ import division, print_function
+from io import BytesIO
+import json
 from keras.applications.resnet import ResNet50
 # coding=utf-8
 import os
 import numpy as np
 from keras.utils import load_img, img_to_array
+import base64
+from PIL import Image
 
 # Keras
 from keras.applications.imagenet_utils import preprocess_input, decode_predictions
@@ -44,14 +48,20 @@ def index():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    # Get the file from post request
-    f = request.files['file']
+
+    json_data = request.get_json()
+    dict_data = json.loads(json_data)
+
+    img = dict_data['file']
+    img = base64.b64decode(img)
+    img = BytesIO(img)
+    img = Image.open(img)
 
     # Save the file to ./uploads
     basepath = os.path.dirname(__file__)
     file_path = os.path.join(
-        basepath, 'uploads', secure_filename(f.filename))
-    f.save(file_path)
+        basepath, 'uploads', secure_filename(img.filename))
+    img.save(file_path)
 
     # Make prediction
     preds = model_predict(file_path, model)
