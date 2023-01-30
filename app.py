@@ -1,4 +1,5 @@
 from __future__ import division, print_function
+import os
 from keras.applications.resnet import ResNet50
 # coding=utf-8
 import numpy as np
@@ -45,13 +46,16 @@ def index():
 @app.route('/predict', methods=['POST'])
 def predict():
     # image_b64 = request.form.get("file")
-    image_b64 = request.get_json()["file"]
-    image_bytes = base64.b64decode(image_b64)
-    with open("./uploads/29.png", "wb") as f:
-        f.write(image_bytes)
+    f = request.form.get("file")
+
+    # Save the file to ./uploads
+    basepath = os.path.dirname(__file__)
+    file_path = os.path.join(
+        basepath, 'uploads', secure_filename(f.filename))
+    f.save(file_path)
 
     # Make prediction
-    preds = model_predict("./uploads/29.png", model)
+    preds = model_predict(file_path, model)
 
     # Process your result for human
     # pred_class = preds.argmax(axis=-1)            # Simple argmax
