@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/d26f4717-dec5-4a92-a1e6-f2b737fb76c7/AppServices/subscriptions/d26f4717-dec5-4a92-a1e6-f2b737fb76c7/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/fashionback",
+    "appService.deploySubpath": "."
+}
