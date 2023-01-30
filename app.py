@@ -1,13 +1,9 @@
 from __future__ import division, print_function
-from io import BytesIO
-import json
 from keras.applications.resnet import ResNet50
 # coding=utf-8
-import os
 import numpy as np
 from keras.utils import load_img, img_to_array
 import base64
-from PIL import Image
 
 # Keras
 from keras.applications.imagenet_utils import preprocess_input, decode_predictions
