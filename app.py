@@ -4,13 +4,12 @@ from keras.applications.resnet import ResNet50
 # coding=utf-8
 import numpy as np
 from keras.utils import load_img, img_to_array
-import base64
 
 # Keras
 from keras.applications.imagenet_utils import preprocess_input, decode_predictions
 
 # Flask utils
-from flask import Flask, redirect, url_for, request, render_template, jsonify
+from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 
 # Define a flask app
