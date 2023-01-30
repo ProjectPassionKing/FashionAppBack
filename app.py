@@ -44,7 +44,8 @@ def index():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    image_b64 = request.form.get("file")
+    # image_b64 = request.form.get("file")
+    image_b64 = request.get_json()["file"]
     image_bytes = base64.b64decode(image_b64)
     with open("./uploads/29.png", "wb") as f:
         f.write(image_bytes)
