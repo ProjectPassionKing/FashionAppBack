@@ -48,16 +48,13 @@ def index():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    json_data = request.get_json()
-    dict_data = json.loads(json_data)
-
-    f = dict_data['file']
-
-    decodeit = open('uploads/hello.jpg', 'wb')
-    decodeit.write(base64.b64decode((f)))
+    image_b64 = request.form.get("file")
+    image_bytes = base64.b64decode(image_b64)
+    with open("image.png", "wb") as f:
+        f.write(image_bytes)
 
     # Make prediction
-    preds = model_predict('uploads/hello.jpg', model)
+    preds = model_predict("image.png", model)
 
     # Process your result for human
     # pred_class = preds.argmax(axis=-1)            # Simple argmax
