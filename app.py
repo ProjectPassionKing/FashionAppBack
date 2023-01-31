@@ -17,7 +17,6 @@ app = Flask(__name__)
 
 # Check https://keras.io/applications/
 model = ResNet50(weights='imagenet')
-model.save('')
 
 
 def model_predict(img_path, model):
@@ -46,14 +45,8 @@ def index():
 def predict():
     f = request.files["file"]
 
-    # Save the file to ./uploads
-    basepath = os.path.dirname(__file__)
-    file_path = os.path.join(
-        basepath, 'uploads', secure_filename(f.filename))
-    f.save(file_path)
-
     # Make prediction
-    preds = model_predict(file_path, model)
+    preds = model_predict(f, model)
 
     # Process your result for human
     # pred_class = preds.argmax(axis=-1)            # Simple argmax
