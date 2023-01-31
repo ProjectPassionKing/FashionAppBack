@@ -18,7 +18,6 @@ import base64
 app = Flask(__name__)
 
 # Check https://keras.io/applications/
-# model = ResNet50(weights='imagenet')
 
 
 def model_predict(img_path, model):
@@ -37,14 +36,15 @@ def model_predict(img_path, model):
     return preds
 
 
-# @app.route('/', methods=['GET'])
-# def index():
-#     # Main page
-#     return "Hello world"
+@app.route('/', methods=['GET'])
+def index():
+    # Main page
+    return "Hello world"
 
 
-@app.route('/', methods=['POST'])
+@app.route('/pred', methods=['POST'])
 def predict():
+    pred_model = ResNet50(weights='imagenet')
     f = request.files["file"]
 
     # Save the file to ./uploads
@@ -54,10 +54,9 @@ def predict():
     f.save(file_path)
 
     # Make prediction
-    preds = model_predict(file_path, model)
+    preds = model_predict(file_path, pred_model)
 
-    # Process your result for human
-    # pred_class = preds.argmax(axis=-1)            # Simple argmax
+    # Simple argmax
     pred_class = decode_predictions(preds, top=1)   # ImageNet Decode
     result = str(pred_class[0][0][1])               # Convert to string
     return jsonify({'prediction': str(result)})
@@ -65,8 +64,7 @@ def predict():
 
 @app.route('/sim', methods=['POST'])
 def simulate():
-    # load a pretrained model (recommended for training)
-    model = YOLO('./simulate/top_pants.pt')
+    sim_model = YOLO('./simulate/top_pants.pt')
 
     f = request.files["file"]
     f.save("uploads\person\person_1.jpg")
@@ -76,12 +74,11 @@ def simulate():
 
     human_img = cv2.imread(human_path)
     # human_img = cv2.cvtColor(human_img, cv2.COLOR_BGR2RGB)
-    human_result = model.predict(human_path)[0].boxes
+    human_result = sim_model.predict(human_path)[0].boxes
 
     boxes = {}
     for box in human_result:
         boxes[box.cls[0].item()] = box.xyxy[0].numpy().astype('int')
-    print(boxes)
 
     for clothes_path in clothes_dir:
         clothes_img = cv2.imread(clothes_path)
@@ -90,19 +87,18 @@ def simulate():
         clothes_label = clothes_result[0].cls[0].item()
         clothes_box = clothes_result[0].xyxy[0].numpy().astype('int')
 
-        if clothes_label not in boxes.keys():
+        if clothes_label not in boxes:
             continue
 
         xy = boxes[clothes_label]
 
-        target = clothes_img[clothes_box[1]:clothes_box[3], clothes_box[0]:clothes_box[2]]
+        target = clothes_img[clothes_box[1]                             :clothes_box[3], clothes_box[0]:clothes_box[2]]
         h, w, c = human_img[xy[1]:xy[3], xy[0]:xy[2]].shape
         target = cv2.resize(target, (w, h))
 
         alpha = 0.35
         human_img[xy[1]: xy[3], xy[0]:xy[2]] = cv2.addWeighted(
             human_img[xy[1]: xy[3], xy[0]:xy[2]], alpha, target, 1-alpha, 0)
-    plt.imshow(human_img)
 
     result_path = r"uploads\result\result_1.jpg"
 
