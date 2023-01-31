@@ -27,9 +27,6 @@ def model_predict(img_path, model):
     x = img_to_array(img)
     # x = np.true_divide(x, 255)
     x = np.expand_dims(x, axis=0)
-
-    # Be careful how your trained model deals with the input
-    # otherwise, it won't make correct prediction!
     x = preprocess_input(x, mode='caffe')
 
     preds = model.predict(x)
@@ -83,7 +80,7 @@ def simulate():
     for clothes_path in clothes_dir:
         clothes_img = cv2.imread(clothes_path)
         # clothes_img = cv2.cvtColor(clothes_img, cv2.COLOR_BGR2RGB)
-        clothes_result = model.predict(clothes_path)[0].boxes
+        clothes_result = sim_model.predict(clothes_path)[0].boxes
         clothes_label = clothes_result[0].cls[0].item()
         clothes_box = clothes_result[0].xyxy[0].numpy().astype('int')
 
