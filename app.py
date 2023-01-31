@@ -35,13 +35,13 @@ def model_predict(img_path, model):
     return preds
 
 
-@app.route('/', methods=['GET'])
-def index():
-    # Main page
-    return "Hello world"
+# @app.route('/', methods=['GET'])
+# def index():
+#     # Main page
+#     return "Hello world"
 
 
-@app.route('/predict', methods=['POST'])
+@app.route('/', methods=['POST'])
 def predict():
     f = request.files["file"]
 
