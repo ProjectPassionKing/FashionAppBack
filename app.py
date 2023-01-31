@@ -45,8 +45,14 @@ def index():
 def predict():
     f = request.files["file"]
 
+    # Save the file to ./uploads
+    basepath = os.path.dirname(__file__)
+    file_path = os.path.join(
+        basepath, 'uploads', secure_filename(f.filename))
+    f.save(file_path)
+
     # Make prediction
-    preds = model_predict(f, model)
+    preds = model_predict(file_path, model)
 
     # Process your result for human
     # pred_class = preds.argmax(axis=-1)            # Simple argmax
