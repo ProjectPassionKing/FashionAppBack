@@ -4,9 +4,7 @@ from keras.applications.resnet import ResNet50
 import numpy as np
 from keras.utils import load_img, img_to_array
 import cv2
-import matplotlib.pyplot as plt
 from ultralytics import YOLO
-import matplotlib.pyplot as plt
 import cv2
 from glob import glob
 from keras.applications.imagenet_utils import preprocess_input, decode_predictions
@@ -61,7 +59,7 @@ def predict():
 
 @app.route('/sim', methods=['POST'])
 def simulate():
-    sim_model = YOLO('./simulate/top_pants.pt')
+    sim_model = YOLO('top_pants.pt')
 
     f = request.files["file"]
     f.save("uploads\person\person_1.jpg")
