@@ -6,12 +6,15 @@ import numpy as np
 from keras.utils import load_img, img_to_array
 import cv2
 from ultralytics import YOLO
-import cv2
 from glob import glob
 from keras.applications.imagenet_utils import preprocess_input, decode_predictions
 from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 import base64
+from recommend import get_models, recommend
+
+sim_model = YOLO('models/top_pants.pt')
+models = get_models()
 
 # Define a flask app
 app = Flask(__name__)
@@ -40,7 +43,6 @@ def index():
 
 @app.route('/pred', methods=['POST'])
 def predict():
-    pred_model = ResNet50(weights='imagenet')
     f = request.files["file"]
 
     # Save the file to ./uploads
@@ -50,18 +52,16 @@ def predict():
     f.save(file_path)
 
     # Make prediction
-    preds = model_predict(file_path, pred_model)
+    paths, keywords = recommend(
+        sim_model, models, file_path, weight='straight')
+    top = " ".join(keywords[0])
+    bottom = " ".join(keywords[1])
 
-    # Simple argmax
-    pred_class = decode_predictions(preds, top=1)   # ImageNet Decode
-    result = str(pred_class[0][0][1])               # Convert to string
-    return jsonify({'prediction': str(result)})
+    return jsonify({'top': top, 'bottom': bottom})
 
 
 @app.route('/sim', methods=['POST'])
 def simulate():
-    sim_model = YOLO('top_pants.pt')
-
     f = request.files["file"]
     f.save("uploads\person\person_1.jpg")
     human_path = "uploads\person\person_1.jpg"
@@ -98,7 +98,7 @@ def simulate():
             np.float32), (clothes_img.shape[1], clothes_img.shape[0]))
         clothes_img[clothes_mask == 0] = 0
 
-        target = clothes_img[clothes_box[1]:clothes_box[3], clothes_box[0]:clothes_box[2]]
+        target = clothes_img[clothes_box[1]                             :clothes_box[3], clothes_box[0]:clothes_box[2]]
         h, w, c = human_img[xy[1]:xy[3], xy[0]:xy[2]].shape
         target = cv2.resize(target, (w, h))
         clothes_mask = cv2.resize(clothes_mask, (w, h))
@@ -118,6 +118,6 @@ def simulate():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port='5000', debug=True)
 
 # py -m flask run --host=0.0.0.0 --port=5000
