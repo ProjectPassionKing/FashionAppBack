@@ -1,13 +1,10 @@
 from __future__ import division, print_function
 import os
 import random
-from keras.applications.resnet import ResNet50
-import numpy as np
-from keras.utils import load_img, img_to_array
 import cv2
+import numpy as np
 from ultralytics import YOLO
 from glob import glob
-from keras.applications.imagenet_utils import preprocess_input, decode_predictions
 from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 import base64
@@ -20,19 +17,6 @@ models = get_models()
 app = Flask(__name__)
 
 # Check https://keras.io/applications/
-
-
-def model_predict(img_path, model):
-    img = load_img(img_path, target_size=(224, 224))
-
-    # Preprocessing the image
-    x = img_to_array(img)
-    # x = np.true_divide(x, 255)
-    x = np.expand_dims(x, axis=0)
-    x = preprocess_input(x, mode='caffe')
-
-    preds = model.predict(x)
-    return preds
 
 
 @app.route('/', methods=['GET'])

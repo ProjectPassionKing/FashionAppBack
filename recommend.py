@@ -11,8 +11,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
 
-import tensorflow as tf
-
 import timm
 
 import warnings
