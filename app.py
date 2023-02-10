@@ -1,11 +1,12 @@
 from __future__ import division, print_function
+import json
 import os
 import random
 import cv2
 import numpy as np
 from ultralytics import YOLO
 from glob import glob
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file, Response
 from werkzeug.utils import secure_filename
 import base64
 from recommend import get_models, recommend
@@ -38,10 +39,24 @@ def predict():
     # Make prediction
     paths, keywords = recommend(
         sim_model, models, file_path, weight='straight')
-    top = " ".join(keywords[0])
-    bottom = " ".join(keywords[1])
+    top = "".join(paths[0])
+    bottom = "".join(paths[1])
 
-    return jsonify({'top': top, 'bottom': bottom})
+    with open(top, "rb") as f1:
+        file1_data = f1.read()
+
+    with open(bottom, "rb") as f2:
+        file2_data = f2.read()
+
+    file1_encoded = base64.b64encode(file1_data).decode("utf-8")
+    file2_encoded = base64.b64encode(file2_data).decode("utf-8")
+
+    files = {
+        "file1": file1_encoded,
+        "file2": file2_encoded,
+    }
+
+    return Response(json.dumps(files), mimetype="application/json")
 
 
 @app.route('/sim', methods=['POST'])
@@ -82,7 +97,7 @@ def simulate():
             np.float32), (clothes_img.shape[1], clothes_img.shape[0]))
         clothes_img[clothes_mask == 0] = 0
 
-        target = clothes_img[clothes_box[1]                             :clothes_box[3], clothes_box[0]:clothes_box[2]]
+        target = clothes_img[clothes_box[1]:clothes_box[3], clothes_box[0]:clothes_box[2]]
         h, w, c = human_img[xy[1]:xy[3], xy[0]:xy[2]].shape
         target = cv2.resize(target, (w, h))
         clothes_mask = cv2.resize(clothes_mask, (w, h))
