@@ -10,6 +10,7 @@ from flask import Flask, request, jsonify, send_file, Response
 from werkzeug.utils import secure_filename
 import base64
 from recommend import get_models, recommend
+from view import view
 
 sim_model = YOLO('models/top_pants.pt')
 models = get_models()
@@ -37,23 +38,21 @@ def predict():
     f.save(file_path)
 
     # Make prediction
-    paths, keywords = recommend(
-        sim_model, models, file_path, weight='straight')
-    top = "".join(paths[0])
-    bottom = "".join(paths[1])
+    paths, keywords, color = recommend(sim_model, models, file_path, 
+                                    gender='여자', weight='straight')
+    outer = keywords[0]
+    top = keywords[1]
+    bottom = keywords[2]
+    img = view(paths[0], paths[1], paths[2], color)
+    cv2.imwrite('result.jpg', img)
 
-    with open(top, "rb") as f1:
+    with open("result.jpg", "rb") as f1:
         file1_data = f1.read()
 
-    with open(bottom, "rb") as f2:
-        file2_data = f2.read()
-
     file1_encoded = base64.b64encode(file1_data).decode("utf-8")
-    file2_encoded = base64.b64encode(file2_data).decode("utf-8")
 
     files = {
-        "file1": file1_encoded,
-        "file2": file2_encoded,
+        "file1": file1_encoded
     }
 
     return Response(json.dumps(files), mimetype="application/json")

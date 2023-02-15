@@ -1,0 +1,45 @@
+경로,키워드,체형,상하의,카테고리,성별,기장,핏,넥라인
+top/vknit.png,브이넥 니트,straight,top,니트웨어,공용,노말,노멀,브이넥
+top/roundknit.png,라운드넥 니트,straight,top,니트웨어,공용,노말,노멀,라운드넥
+top/vblowse.png,브이넥 블라우스,straight,top,블라우스,여자,노말,루즈,브이넥
+top/vtshirt.png,브이넥 티셔츠,straight,top,티셔츠,공용,노말,노멀,브이넥
+top/roundtshirt.png,라운드넥 티셔츠,straight,top,티셔츠,공용,노말,노멀,라운드넥
+top/looseshirt.png,루즈핏 셔츠,natural,top,셔츠,공용,롱,노멀,노카라
+top/ribbonblowse.png,리본 블라우스,wave,top,블라우스,여자,노말,스키니,라운드넥
+top/slimshirt.png,슬림핏 셔츠,straight,top,셔츠,공용,노말,스키니,노카라
+top/overknit.png,오버핏 니트,natural,top,니트웨어,공용,롱,노멀,유넥
+top/overlinnen.png,오버핏 린넨,natural,top,셔츠,공용,롱,루즈,노카라
+top/overman.png,오버핏 맨투맨,natural,top,니트웨어,공용,롱,루즈,라운드넥
+top/chinashirt.png,차이나카라 셔츠,wave,top,셔츠,공용,노말,스키니,노카라
+top/cropknit.png,크롭 니트,wave,top,니트웨어,여자,크롭,스키니,라운드넥
+top/tutleknit.png,터틀넥 니트,wave,top,니트웨어,공용,노말,노멀,터틀넥
+top/tutleman.png,터틀넥 맨투맨,wave,top,티셔츠,공용,노말,노멀,터틀넥
+top/prilblowse.png,프릴 블라우스,wave,top,블라우스,여자,크롭,노멀,브이넥
+top/hoodie.png,후드티,natural,top,후드티,공용,롱,노멀,유넥
+top/hoodie.png,후드티,wave,top,후드티,공용,롱,노멀,유넥
+bottom/Hlongskirt.png,H라인 롱 스커트,straight,bottom,스커트,여자,롱,스키니,노카라
+bottom/Hminiskirt.png,H라인 미니 스커트,straight,bottom,스커트,여자,크롭,노멀,노카라
+bottom/Hskirt.png,H라인 스커트,straight,bottom,스커트,여자,노말,스키니,노카라
+bottom/bootsslacks.png,부츠컷 슬랙스,straight,bottom,팬츠,공용,노말,루즈,노카라
+bottom/semislacks.png,세미와이드 슬랙스,wave,bottom,팬츠,공용,노말,노멀,노카라
+bottom/skinypants.png,스키니 팬츠,straight,bottom,팬츠,공용,노말,스키니,노카라
+bottom/straightpants.png,스트레이트핏 팬츠,straight,bottom,팬츠,공용,크롭,노멀,노카라
+bottom/wideslacks.png,와이드 슬랙스,wave,bottom,팬츠,공용,롱,노멀,노카라
+bottom/wideslacks.png,와이드 슬랙스,natural,bottom,팬츠,공용,롱,노멀,노카라
+bottom/widepants.png,와이드 팬츠,wave,bottom,팬츠,공용,롱,루즈,노카라
+bottom/widepants.png,와이드 팬츠,natural,bottom,팬츠,공용,롱,루즈,노카라
+bottom/Alongskirt.png,A라인 롱 스커트,wave,bottom,스커트,여자,롱,루즈,노카라
+bottom/Aminiskirt.png,A라인 미니 스커트,wave,bottom,스커트,여자,크롭,루즈,노카라
+bottom/joggerpants.png,조거팬츠,natural,bottom,조거팬츠,공용,노말,노멀,노카라
+bottom/taperdpants.png,테이퍼드 팬츠,wave,bottom,팬츠,공용,노말,루즈,노카라
+bottom/pinslacks.png,핀턱슬랙스,natural,bottom,팬츠,공용,노말,루즈,노카라
+bottom/highpants.png,하이웨스트 팬츠,wave,bottom,팬츠,공용,노말,루즈,노카라
+outer/cardigan.png,가디건,,outer,,공용,,,
+outer/doublecoat.png,더블 코트,,outer,,공용,,,
+outer/blaser.png,블레이저,,outer,,공용,,,
+outer/jacket.png,자켓,,outer,,공용,,,
+outer/cropcardigan.png,크롭 가디건,,outer,,여자,,,
+outer/cropblaser.png,크롭 블레이저,,outer,,여자,,,
+outer/cropjacket.png,크롭 자켓,,outer,,여자,,,
+outer/crophoodie.png,크롭 후드 집업,,outer,,여자,,,
+outer/hoodie.png,후드 집업,,outer,,공용,,,

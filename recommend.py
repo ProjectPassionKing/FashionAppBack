@@ -11,6 +11,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
 
+import tensorflow as tf
+
 import timm
 
 import warnings
@@ -63,30 +65,29 @@ color_map = {0: '골드',
                 20: '화이트'}
 
 neck_map = {0: '노카라',
-            1: '라운드넥',
-            2: '보트넥',
-            3: '브이넥',
-            4: '스위트하트',
-            5: '스퀘어넥',
-            6: '오프숄더',
-            7: '원숄더',
-            8: '유넥',
-            9: '터틀넥',
-            10: '홀터넥',
-            11: '후드'}
+                1: '라운드넥',
+                2: '보트넥',
+                3: '브이넥',
+                4: '스위트하트',
+                5: '스퀘어넥',
+                6: '오프숄더',
+                7: '원숄더',
+                8: '유넥',
+                9: '터틀넥',
+                10: '홀터넥',
+                11: '후드'}
 
 kara_map = {0: '밴드칼라',
-            1: '보우칼라',
-            2: '세일러칼라',
-            3: '셔츠칼라',
-            4: '숄칼라',
-            5: '차이나칼라',
-            6: '테일러드칼라',
-            7: '폴로칼라',
-            8: '피터팬칼라'}
+                1: '보우칼라',
+                2: '세일러칼라',
+                3: '셔츠칼라',
+                4: '숄칼라',
+                5: '차이나칼라',
+                6: '테일러드칼라',
+                7: '폴로칼라',
+                8: '피터팬칼라'}
 
-label_map = [category_map, size_map, outfit_map, color_map, neck_map, kara_map]
-
+label_map = [category_map, size_map, outfit_map, neck_map, color_map]
 
 class BaseModel(nn.Module):
     def __init__(self, num_classes=12):
@@ -94,16 +95,14 @@ class BaseModel(nn.Module):
 #         self.backbone = timm.create_model('vit_base_patch16_224', pretrained=True)
         # self.backbone = timm.create_model('convnext_base', pretrained=True)
 #         self.backbone = timm.create_model('tf_efficientnet_b7_ns', pretrained=True)
-        self.backbone = timm.create_model(
-            'swin_tiny_patch4_window7_224', pretrained=True)
+        self.backbone = timm.create_model('swin_tiny_patch4_window7_224', pretrained=True)
 #         self.backbone = models.vit_l_16(pretrained=True)
         self.classifier = nn.Linear(1000, num_classes)
-
+        
     def forward(self, x):
         x = self.backbone(x)
         x = F.softmax(self.classifier(x))
         return x
-
 
 def get_models():
     model1 = BaseModel(num_classes=len(category_map))
@@ -118,21 +117,20 @@ def get_models():
     model3.load_state_dict(torch.load('models/model_outfit.pt'))
     model3.eval()
 
-    model4 = BaseModel(num_classes=len(color_map))
-    model4.load_state_dict(torch.load('models/model_color.pt'))
+    model4 = BaseModel(num_classes=len(neck_map))
+    model4.load_state_dict(torch.load('models/model_neck.pt'))
     model4.eval()
 
-    model5 = BaseModel(num_classes=len(neck_map))
-    model5.load_state_dict(torch.load('models/model_neck.pt'))
+    model5 = BaseModel(num_classes=len(color_map))
+    model5.load_state_dict(torch.load('models/model_color.pt'))
     model5.eval()
 
-    model6 = BaseModel(num_classes=len(kara_map))
-    model6.load_state_dict(torch.load('models/model_kara.pt'))
-    model6.eval()
-    return [model1, model2, model3, model4, model5, model6]
+    # model6 = BaseModel(num_classes=len(kara_map))
+    # model6.load_state_dict(torch.load('models/model_kara.pt'))
+    # model6.eval()
+    return [model1, model2, model3, model4, model5]
 
-
-def recommend(yolo, models, path, weight='straight'):
+def recommend(yolo, models, path, gender, weight='straight'):
     print('start')
 
     human_img, human_boxes = crop_clothes(yolo, path)
@@ -144,33 +142,28 @@ def recommend(yolo, models, path, weight='straight'):
         img = human_img[xy[1]:xy[3], xy[0]:xy[2]]
         img = cv2.resize(img, (224, 224))
         img = img / 127.5 - 1
-        img = np.transpose(img, (2, 0, 1))
+        img = np.transpose(img, (2,0,1))
         img = np.expand_dims(img, axis=0)
         preds = []
         for model, label in zip(models, label_map):
-            pred = model(torch.tensor(img, dtype=torch.float32)
-                         ).argmax(1).cpu().numpy()
+            pred = model(torch.tensor(img, dtype = torch.float32)).argmax(1).cpu().numpy()
             preds.append(label[pred[0]])
 
         results[box] = preds
 
     paths = []
     keywords = []
+    
+    paths, keywords, color = recommend_sim(results, gender, weight)
 
-    for clothes in ['top', 'bottom']:
-        result_path, keyword = check_sim(results, clothes, weight)
-        paths.append(result_path)
-        keywords.append(keyword)
-
-    return paths, keywords
-
-
+    return paths, keywords, color
+    
 def crop_clothes(yolo, path):
     seg_map = {0: 'top', 1: 'top', 2: 'bottom'}
 
     human_img = cv2.imread(path)
     human_result = yolo.predict(path)[0]
-
+    
     human_boxes = {}
     for i in range(len(human_result)):
         box = human_result.boxes[i]
@@ -179,30 +172,78 @@ def crop_clothes(yolo, path):
 
     return human_img, human_boxes
 
+def recommend_sim(results, gender, weight='straight'):
+    df = pd.read_csv('datas/data.csv')
 
-def check_sim(results, clothes, weight='straight'):
-    name = weight + ' ' + clothes + '.csv'
-    csv_name = f'datas/{name}'
-    df = pd.read_csv(csv_name)
+    paths = []
+    keywords = []
+    colors = []
 
-    if clothes not in results:
-        result = df.sample(1)
-        path = 'Result/' + weight + ' ' + \
-            clothes + '/' + result['경로'].values[0]
-        cat = ['카테고리', '기장', '핏', '색', '넥라인'] if clothes == '상의' else [
-            '카테고리', '기장', '핏', '색']
-        keyword = result[cat].values[0].tolist()
-        return path, keyword
+    if gender != '여자':
+        df = df[df['성별'] != '여자']
+
+    data = df[df['상하의'] == 'outer']
+    result = data.sample(1)
+    paths.append('datas/' + result['경로'].values[0])
+    keywords.append(result['키워드'].values[0])
+
+    if 'top' in results and 'bottom' in results:
+        for clothes in ['top', 'bottom']:
+            cat = ['카테고리', '기장', '핏', '넥라인'] if clothes == '상의' else ['카테고리', '기장', '핏']
+            if clothes == 'top':
+                array = results[clothes][:-1]
+            else:
+                array = results[clothes][:-2]
+
+            data = df[df['상하의'] == clothes]
+            data = data[data['체형'] == weight].reset_index(drop=True)
+            data['rank'] = data.apply(lambda x: len(set(x) & set(array)), axis=1)
+    
+            # 상위 3개 추출
+            data = data.sort_values('rank', ascending=False).iloc[:3]
+            result = data.sample(1)
+            paths.append('datas/' + result['경로'].values[0])
+            keywords.append(result['키워드'].values[0])
+            colors.append(results[clothes][-1])
+    elif 'top' in results:
+        cat = ['카테고리', '기장', '핏', '넥라인']
+        array = results['top'][:-1]
+
+        data = df[df['상하의'] == 'top']
+        data = data[data['체형'] == weight].reset_index(drop=True)
+        data['rank'] = data.apply(lambda x: len(set(x) & set(array)), axis=1)
+
+        # 상위 3개 추출
+        data = data.sort_values('rank', ascending=False).iloc[:3]
+        result = data.sample(1)
+        paths.append('datas/' + result['경로'].values[0])
+        keywords.append(result['키워드'].values[0])
+        colors.append(results['top'][-1])
+        
+        data = df[df['상하의'] == 'bottom']
+        data = data[data['체형'] == weight].reset_index(drop=True)
+        result = data.sample(1)
+        paths.append('datas/' + result['경로'].values[0])
+        keywords.append(result['키워드'].values[0])
     else:
-        array = results[clothes]
-        data = df.iloc[:, 2:]
-        result = data[data.apply(lambda x: len(set(x) & set(array)), axis=1) == data.apply(
-            lambda x: len(set(x) & set(array)), axis=1).max()]
-        result = df.iloc[result.sample(1).index]
-        path = 'Result/' + weight + ' ' + \
-            clothes + '/' + result['경로'].values[0]
-        cat = ['카테고리', '기장', '핏', '색', '넥라인'] if clothes == '상의' else [
-            '카테고리', '기장', '핏', '색']
-        keyword = result[cat].values[0].tolist()
+        data = df[df['상하의'] == 'top']
+        data = data[data['체형'] == weight].reset_index(drop=True)
+        result = data.sample(1)
+        paths.append('datas/' + result['경로'].values[0])
+        keywords.append(result['키워드'].values[0])
+        
+        cat = ['카테고리', '기장', '핏', '넥라인']
+        array = results['bottom'][:-1]
 
-    return path, keyword
+        data = df[df['상하의'] == 'bottom']
+        data = data[data['체형'] == weight].reset_index(drop=True)
+        data['rank'] = data.apply(lambda x: len(set(x) & set(array)), axis=1)
+
+        # 상위 3개 추출
+        data = data.sort_values('rank', ascending=False).iloc[:3]
+        result = data.sample(1)
+        paths.append('datas/' + result['경로'].values[0])
+        keywords.append(result['키워드'].values[0])
+        colors.append(results['bottom'][-1])        
+
+    return paths, keywords, random.choice(colors)
