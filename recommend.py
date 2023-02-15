@@ -225,7 +225,7 @@ def recommend_sim(results, gender, weight='straight'):
         result = data.sample(1)
         paths.append('datas/' + result['경로'].values[0])
         keywords.append(result['키워드'].values[0])
-    else:
+    elif 'bottom' in results:
         data = df[df['상하의'] == 'top']
         data = data[data['체형'] == weight].reset_index(drop=True)
         result = data.sample(1)
@@ -244,6 +244,8 @@ def recommend_sim(results, gender, weight='straight'):
         result = data.sample(1)
         paths.append('datas/' + result['경로'].values[0])
         keywords.append(result['키워드'].values[0])
-        colors.append(results['bottom'][-1])        
+        colors.append(results['bottom'][-1])
+    else:
+        return None, None, None        
 
     return paths, keywords, random.choice(colors)
