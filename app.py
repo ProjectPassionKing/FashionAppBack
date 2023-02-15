@@ -40,6 +40,10 @@ def predict():
     # Make prediction
     paths, keywords, color = recommend(sim_model, models, file_path, 
                                     gender='여자', weight='straight')
+    
+    if paths == None:
+        return Response(json.dumps(files), mimetype="application/json")
+
     outer = keywords[0]
     top = keywords[1]
     bottom = keywords[2]
