@@ -42,7 +42,7 @@ def predict():
                                     gender='여자', weight='straight')
     
     if paths == None:
-        return Response(json.dumps(files), mimetype="application/json")
+        return Response(json.dumps({"response": "error"}), mimetype="application/json")
 
     outer = keywords[0]
     top = keywords[1]
