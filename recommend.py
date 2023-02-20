@@ -144,6 +144,8 @@ def recommend(yolo, models, path, gender, weight='straight'):
     for box in human_boxes:
         xy = human_boxes[box]
         img = human_img[xy[1]:xy[3], xy[0]:xy[2]]
+        cv2.rectangle(human_img, (xy[0], xy[1]),
+                      (xy[2], xy[3]), (255, 0, 0), 4)
         img = cv2.resize(img, (224, 224))
         img = img / 127.5 - 1
         img = np.transpose(img, (2, 0, 1))
@@ -155,6 +157,8 @@ def recommend(yolo, models, path, gender, weight='straight'):
             preds.append(label[pred[0]])
 
         results[box] = preds
+
+    cv2.imwrite('bounding_box.jpg', human_img)
 
     paths = []
     keywords = []
