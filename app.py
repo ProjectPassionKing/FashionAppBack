@@ -56,10 +56,15 @@ def predict():
     with open("result.jpg", "rb") as f1:
         file1_data = f1.read()
 
+    with open("bounding_box.jpg", "rb") as f2:
+        file2_data = f2.read()
+
     file1_encoded = base64.b64encode(file1_data).decode("utf-8")
+    file2_encoded = base64.b64encode(file2_data).decode("utf-8")
 
     files = {
-        "file1": file1_encoded
+        "result_photo": file1_encoded,
+        "box_photo": file2_encoded
     }
 
     return Response(json.dumps(files), mimetype="application/json")
@@ -103,7 +108,8 @@ def simulate():
             np.float32), (clothes_img.shape[1], clothes_img.shape[0]))
         clothes_img[clothes_mask == 0] = 0
 
-        target = clothes_img[clothes_box[1]                             :clothes_box[3], clothes_box[0]:clothes_box[2]]
+        target = clothes_img[clothes_box[1]
+            :clothes_box[3], clothes_box[0]:clothes_box[2]]
         h, w, c = human_img[xy[1]:xy[3], xy[0]:xy[2]].shape
         target = cv2.resize(target, (w, h))
         clothes_mask = cv2.resize(clothes_mask, (w, h))
