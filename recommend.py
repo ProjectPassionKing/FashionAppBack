@@ -142,7 +142,7 @@ def recommend(yolo, models, path, gender, weight='straight'):
         xy = human_boxes[box]
         img = human_img[xy[1]:xy[3], xy[0]:xy[2]]
         cv2.rectangle(human_img, (xy[0], xy[1]),
-                      (xy[2], xy[3]), (255, 0, 0), 4)
+                      (xy[2], xy[3]), (0, 0, 255), 2)
         img = cv2.resize(img, (224, 224))
         img = img / 127.5 - 1
         img = np.transpose(img, (2, 0, 1))
