@@ -29,9 +29,9 @@ def index():
 
 @app.route('/pred', methods=['POST'])
 def predict():
-    results = request.get_json()
-    gender = results["gender"]
-    weight = results["diagnosis"]
+    weight = request.form['diagnosis'].lower()
+    gender = request.form['gender']
+
     f = request.files["file"]
 
     # Save the file to ./uploads
@@ -108,8 +108,7 @@ def simulate():
             np.float32), (clothes_img.shape[1], clothes_img.shape[0]))
         clothes_img[clothes_mask == 0] = 0
 
-        target = clothes_img[clothes_box[1]
-            :clothes_box[3], clothes_box[0]:clothes_box[2]]
+        target = clothes_img[clothes_box[1]:clothes_box[3], clothes_box[0]:clothes_box[2]]
         h, w, c = human_img[xy[1]:xy[3], xy[0]:xy[2]].shape
         target = cv2.resize(target, (w, h))
         clothes_mask = cv2.resize(clothes_mask, (w, h))
