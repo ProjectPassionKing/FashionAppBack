@@ -64,7 +64,10 @@ def predict():
 
     files = {
         "result_photo": file1_encoded,
-        "box_photo": file2_encoded
+        "box_photo": file2_encoded,
+        "outer": outer,
+        "top": top,
+        "bottom": bottom,
     }
 
     return Response(json.dumps(files), mimetype="application/json")
