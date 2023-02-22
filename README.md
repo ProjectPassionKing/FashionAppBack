@@ -10,6 +10,11 @@
 Python 기반의 FashionApp 프로젝트의 백엔드 repository  
 FashionApp의 안드로이드 어플리케이션의 경우, 별도 repository를 참고하십시오. (https://github.com/soojlee0106/FashionApp)  
 
+## Dev Team
+강민규: 모델링  
+이수정: Flask, API  
+하지현: Azure 배포  
+
 ## Model
 ![image](https://user-images.githubusercontent.com/104475739/220561990-6c60fb7b-367b-43d5-859c-7aa24800f9f8.png)  
 <img src="https://user-images.githubusercontent.com/104475739/220561512-7740f9c0-5663-468e-b669-32556af35190.png" height="100"  />
